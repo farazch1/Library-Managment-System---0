@@ -2,1050 +2,279 @@ Microsoft (R) Macro Assembler Version 14.35.32216.1	    04/16/23 23:21:29
 SourceCode.asm						     Page 1 - 1
 
 
-				
-				; ***************************************
-				; ****** LIBRARY MANAGEMENT SYSTEM ******
-				; ***************************************
-				
-				; ***************************************
-				; ************ SUBMITTED BY *************
-				; ***** MUHAMMAD AHMAD 	2021-CE-43 ******
-				; ***** MIAN FARAZ   	2021-CE-44 ******
-				; ***** ALI ABDULLAH    2021-CE-40 ******
-				; ***** HUSSNAIN ALI    2021-CE-60 ******
-				; ***************************************
-				INCLUDE IRVINE32.inc
-			      C ; Include file for Irvine32.lib             (Irvine32.inc)
-			      C 
-			      C ;OPTION CASEMAP:NONE		; optional: make identifiers case-sensitive
-			      C 
-			      C INCLUDE SmallWin.inc		; MS-Windows prototypes, structures, and constants
-			      C .NOLIST
-			      C .LIST
-			      C 
-			      C INCLUDE VirtualKeys.inc
-			      C ; VirtualKeys.inc
-			      C .NOLIST
-			      C .LIST
-			      C 
-			      C 
-			      C .NOLIST
-			      C .LIST
-			      C 
-				
- 00000000			.DATA
-				
-				;***********************************************
-				; ****** Strings of messages to display ********
-				;***********************************************
-				
- 00000000 0A			msg1	 BYTE 0AH
- 00000001  09 2D 2D 2D 2D			 BYTE	"	--------------------------------------------", 0dh, 0ah
-	   2D 2D 2D 2D 2D
-	   2D 2D 2D 2D 2D
-	   2D 2D 2D 2D 2D
-	   2D 2D 2D 2D 2D
-	   2D 2D 2D 2D 2D
-	   2D 2D 2D 2D 2D
-	   2D 2D 2D 2D 2D
-	   2D 2D 2D 2D 2D
-	   0D 0A
- 00000030  09 2D 2D 20 20			 BYTE	"	--  WELCOME TO LIBRARY MANAGEMENT SYSTEM  --", 0dh, 0ah
-	   57 45 4C 43 4F
-	   4D 45 20 54 4F
-	   20 4C 49 42 52
-	   41 52 59 20 4D
-	   41 4E 41 47 45
-	   4D 45 4E 54 20
-	   53 59 53 54 45
-	   4D 20 20 2D 2D
-	   0D 0A
- 0000005F  09 2D 2D 2D 2D			 BYTE	"	--------------------------------------------", 0dh, 0ah, 0ah
-	   2D 2D 2D 2D 2D
-	   2D 2D 2D 2D 2D
-	   2D 2D 2D 2D 2D
-	   2D 2D 2D 2D 2D
-	   2D 2D 2D 2D 2D
-	   2D 2D 2D 2D 2D
-	   2D 2D 2D 2D 2D
-	   2D 2D 2D 2D 2D
-	   0D 0A 0A
- 0000008F  09 31 2D 3E 20			 BYTE	"	1-> Register a Member", 0dh, 0ah
-	   52 65 67 69 73
-	   74 65 72 20 61
-	   20 4D 65 6D 62
-	   65 72 0D 0A
- 000000A7  09 32 2D 3E 20			 BYTE	"	2-> View Members", 0dh, 0ah
-	   56 69 65 77 20
-	   4D 65 6D 62 65
-	   72 73 0D 0A
- 000000BA  09 33 2D 3E 20			 BYTE	"	3-> View Members From File", 0dh, 0ah
-	   56 69 65 77 20
-	   4D 65 6D 62 65
-	   72 73 20 46 72
-	   6F 6D 20 46 69
-	   6C 65 0D 0A
- 000000D7  09 34 2D 3E 20			 BYTE	"	4-> Add Book", 0dh, 0ah
-	   41 64 64 20 42
-	   6F 6F 6B 0D 0A
- 000000E6  09 35 2D 3E 20			 BYTE	"	5-> View Books", 0dh, 0ah
-	   56 69 65 77 20
-	   42 6F 6F 6B 73
-	   0D 0A
- 000000F7  09 36 2D 3E 20			 BYTE	"	6-> View Books From Files", 0dh, 0ah
-	   56 69 65 77 20
-	   42 6F 6F 6B 73
-	   20 46 72 6F 6D
-	   20 46 69 6C 65
-	   73 0D 0A
- 00000113  09 37 2D 3E 20			 BYTE	"	7-> Exit Program", 0dh, 0ah
-	   45 78 69 74 20
-	   50 72 6F 67 72
-	   61 6D 0D 0A
- 00000126  09 43 68 6F 6F			 BYTE	"	Choose Your Option : ", 0
-	   73 65 20 59 6F
-	   75 72 20 4F 70
-	   74 69 6F 6E 20
-	   3A 20 00
- 0000013D 09 45 6E 74 65	REG_MSG	 BYTE "	Enter Member's Name to register: ",0
-	   72 20 4D 65 6D
-	   62 65 72 27 73
-	   20 4E 61 6D 65
-	   20 74 6F 20 72
-	   65 67 69 73 74
-	   65 72 3A 20 00
- 00000160 0A 09 56 69 65	VIEW_MEMBERS_MSG BYTE 0Ah,"	Viewing Registered Members: ",0AH, 0DH, 0
-	   77 69 6E 67 20
-	   52 65 67 69 73
-	   74 65 72 65 64
-	   20 4D 65 6D 62
-	   65 72 73 3A 20
-	   0A 0D 00
- 00000181 09 45 6E 74 65	ADD_MSG			 BYTE "	Enter Book Name & Author Name to Add: ", 0dh, 0ah,
-	   72 20 42 6F 6F
-	   6B 20 4E 61 6D
-	   65 20 26 20 41
-	   75 74 68 6F 72
-	   20 4E 61 6D 65
-	   20 74 6F 20 41
-	   64 64 3A 20 0D
-	   0A 09 53 65 70
-	   61 72 61 74 65
-	   64 20 42 79 20
-	   43 6F 6D 6D 61
-	   3A 00
-							 "	Separated By Comma:",0
- 000001BF 0A 09 56 69 65	VIEW_BOOKS_MSG BYTE 0Ah, "	Viewing Books in Library: ",  0dh, 0ah, 0
-	   77 69 6E 67 20
-	   42 6F 6F 6B 73
-	   20 69 6E 20 4C
-	   69 62 72 61 72
-	   79 3A 20 0D 0A
-	   00
- 000001DE 0A 09 2D 2D 2D	EXIT_MSG	   BYTE 0AH,
-	   2D 2D 2D 2D 2D
-	   2D 2D 2D 2D 2D
-	   2D 2D 2D 2D 20
-	   0D 0A 09 45 78
-	   69 74 69 6E 67
-	   20 50 72 6F 67
-	   72 61 6D 2E 2E
-	   2E 0D 0A 09 2D
-	   2D 2D 2D 2D 2D
-	   2D 2D 2D 2D 2D
-	   2D 2D 2D 2D 2D
-	   2D 2D 00
-								    "	----------------- ",0dh, 0ah,
-								    "	Exiting Program...",0dh, 0ah,
-									"	------------------", 0
-									
-									
-				; variables to maniulate Books & Members
-				
- 0000021D 00000000		bool		   DWORD ?
- 00000221 43 3A 5C 55 73	MEMBERS_FILE   BYTE "C:\Users\faraz\Downloads\Compressed\Library-Management-System-master\Library-Management-System-master\MEMBERS.txt",0
-	   65 72 73 5C 66
-	   61 72 61 7A 5C
-	   44 6F 77 6E 6C
-	   6F 61 64 73 5C
-	   43 6F 6D 70 72
-	   65 73 73 65 64
-	   5C 4C 69 62 72
-	   61 72 79 2D 4D
-	   61 6E 61 67 65
-	   6D 65 6E 74 2D
-	   53 79 73 74 65
-	   6D 2D 6D 61 73
-	   74 65 72 5C 4C
-	   69 62 72 61 72
-	   79 2D 4D 61 6E
-	   61 67 65 6D 65
-	   6E 74 2D 53 79
-	   73 74 65 6D 2D
-	   6D 61 73 74 65
-	   72 5C 4D 45 4D
-	   42 45 52 53 2E
-	   74 78 74 00
- 00000293 43 3A 5C 55 73	BOOKS_FILE     BYTE "C:\Users\faraz\Downloads\Compressed\Library-Management-System-master\Library-Management-System-master\BOOKS.txt",0
-	   65 72 73 5C 66
-	   61 72 61 7A 5C
-	   44 6F 77 6E 6C
-	   6F 61 64 73 5C
-	   43 6F 6D 70 72
-	   65 73 73 65 64
-	   5C 4C 69 62 72
-	   61 72 79 2D 4D
-	   61 6E 61 67 65
-	   6D 65 6E 74 2D
-	   53 79 73 74 65
-	   6D 2D 6D 61 73
-	   74 65 72 5C 4C
-	   69 62 72 61 72
-	   79 2D 4D 61 6E
-	   61 67 65 6D 65
-	   6E 74 2D 53 79
-	   73 74 65 6D 2D
-	   6D 61 73 74 65
-	   72 5C 42 4F 4F
-	   4B 53 2E 74 78
-	   74 00
- 00000303 00000000		filehandle     DWORD ?
- = 00001388			BUFFER_SIZE = 5000
- 00000307  00001388 [		buffer_mem   BYTE buffer_size DUP (?)
-	    00
-	   ]
- 0000168F  00001388 [		buffer_book  BYTE buffer_size DUP (?)
-	    00
-	   ]
- 00002A17  00000001 [		bytesRead dword 1 dup(0)
-	    00000000
-	   ]
- 00002A1B 00000001		REGISTER	 DWORD 1
- 00002A1F 00000002		VIEW_MEMBERS DWORD 2
- 00002A23 00000003		VIEW_MF		 DWORD 3
- 00002A27 00000004		ADD_BOOK	 DWORD 4
- 00002A2B 00000005		VIEW_BOOKS	 DWORD 5
- 00002A2F 00000006		VIEW_BF		 DWORD 6
- 00002A33 00000007		EXITP		 DWORD 7	
- = 00000014			MEMBER_SIZE = 20
- 00002A37  00000014 [		MEMBER1 DB MEMBER_SIZE DUP (?)
-	    00
-	   ]
- 00002A4B  00000014 [		MEMBER2 DB MEMBER_SIZE DUP (?)
-	    00
-	   ]
- 00002A5F  00000014 [		MEMBER3 DB MEMBER_SIZE DUP (?)
-	    00
-	   ]
- 00002A73  00000014 [		MEMBER4 DB MEMBER_SIZE DUP (?)
-	    00
-	   ]
- 00002A87  00000014 [		MEMBER5 DB MEMBER_SIZE DUP (?)
-	    00
-	   ]
- 00002A9B  00000014 [		MEMBER6 DB MEMBER_SIZE DUP (?)
-	    00
-	   ]
- 00002AAF 00000000		NUM_MEMBERS DWORD 0
- 00002AB3 00002A37 R		MEMBERS DD MEMBER1, MEMBER2, MEMBER3, MEMBER4, MEMBER5, MEMBER6, 0AH, 0DH, 0
-	   00002A4B R
-	   00002A5F R
-	   00002A73 R
-	   00002A87 R
-	   00002A9B R
-	   0000000A
-	   0000000D
-	   00000000
-				
- = 0000001E			BOOK_SIZE = 30
- 00002AD7  0000001E [		BOOK1 DB BOOK_SIZE DUP (?)
-	    00
-	   ]
- 00002AF5  0000001E [		BOOK2 DB BOOK_SIZE DUP (?)
-	    00
-	   ]
- 00002B13  0000001E [		BOOK3 DB BOOK_SIZE DUP (?)
-	    00
-	   ]
- 00002B31  0000001E [		BOOK4 DB BOOK_SIZE DUP (?)
-	    00
-	   ]
- 00002B4F  0000001E [		BOOK5 DB BOOK_SIZE DUP (?)
-	    00
-	   ]
- 00002B6D  0000001E [		BOOK6 DB BOOK_SIZE DUP (?)
-	    00
-	   ]
- 00002B8B 00000000		NUM_BOOKS DWORD 0
- 00002B8F 00002AD7 R		BOOKS DD BOOK1, BOOK2, BOOK3, BOOK4, BOOK5, BOOK6, 0AH, 0DH, 0
-	   00002AF5 R
-	   00002B13 R
-	   00002B31 R
-	   00002B4F R
-	   00002B6D R
-	   0000000A
-	   0000000D
-	   00000000
-				
-				
-				; **********************************************
-				; *************** Code Section *****************
-				; **********************************************
-				
- 00000000			.CODE
-				MSG_DISPLAY proto, var: PTR DWORD
-				STRING_INPUT proto, var1: PTR DWORD
- 00000000			main PROC
- 00000000				START:
-					INVOKE MSG_DISPLAY,addr MSG1
- 00000000  68 00000000 R   *	    push   OFFSET msg1
- 00000005  E8 000001EF	   *	    call   MSG_DISPLAY
- 0000000A  E8 00000000 E		CALL READINT	; input for options
-				
- 0000000F  3B 05 00002A1B R		CMP EAX, REGISTER
- 00000015  74 3D			JE REG_M		; jump to Register Member section
- 00000017  3B 05 00002A1F R		CMP EAX, VIEW_MEMBERS
- 0000001D  74 68			JE VIEW_M		; jump to View Members section
- 0000001F  3B 05 00002A23 R		CMP EAX, VIEW_MF
- 00000025  0F 84 0000009C		JE VIEW_MFILE		; jump to Add Book section
- 0000002B  3B 05 00002A27 R		CMP EAX, ADD_BOOK
- 00000031  0F 84 000000E7		JE ADD_B		; jump to View Books section
- 00000037  3B 05 00002A2B R		CMP EAX, VIEW_BOOKS
- 0000003D  0F 84 0000010E		JE VIEW_B		; calling function to display message
- 00000043  3B 05 00002A2F R		CMP EAX, VIEW_BF
- 00000049  0F 84 00000142		JE VIEW_BFILE		; taking input in 2D array
- 0000004F  E9 00000194				JMP EXIT_MENU
-				
-				;----------------------------------------
-				;------------REGISTER MEMBERS------------
-				;----------------------------------------
- 00000054				REG_M:
-						INVOKE MSG_DISPLAY, ADDR REG_MSG          ;INVOKE STRING_INPUT, ADDR INPUT_STRING
- 00000054  68 0000013D R   *	    push   OFFSET REG_MSG
- 00000059  E8 0000019B	   *	    call   MSG_DISPLAY
-				
- 0000005E  BE 00002AB3 R		MOV ESI, OFFSET MEMBERS
- 00000063  B8 00000014			MOV EAX, MEMBER_SIZE
- 00000068  F7 25 00002AAF R		MUL NUM_MEMBERS
- 0000006E  03 F0			ADD ESI, EAX
- 00000070  8B D6			MOV EDX, ESI
- 00000072  B9 00000014			MOV ECX, MEMBER_SIZE
- 00000077  E8 00000000 E		CALL READSTRING
- 0000007C  FF 05 00002AAF R		INC NUM_MEMBERS
-				
-					;INVOKE CreateFile,
-					;ADDR MEMBERS_FILE,
-					;GENERIC_WRITE,
-					;DO_NOT_SHARE, 
-					;NULL, 
-					;OPEN_ALWAYS, 
-					;FILE_ATTRIBUTE_NORMAL, 
-					;0
-				;
-				;cmp eax, INVALID_HANDLE_VALUE
-					;je exit_1
-					;mov filehandle, eax
-				;INVOKE SetFilePointer,
-					 ;filehandle,
-					;0, ; distance low
-					;0, ; distance high
-					;FILE_END
-					;mov eax,filehandle
-				;
-					;mov edx, offset BUFFER_MEM
-					;mov ecx, 7
-					;call READSTRING
-					;mov eax, filehandle
-					;call WriteToFile
-				;
-					;INVOKE SetFilePointer,
-					 ;filehandle,
-					;0, ; distance low
-					;0, ; distance high
-					;FILE_END
-				;exit_1:
-					;invoke CloseHandle, filehandle
-				
- 00000082  E9 FFFFFF79				JMP START
-				
-				;--------------------------------------
-				;--------------VIEW MEMBERS------------
-				;--------------------------------------
- 00000087				VIEW_M:
-						INVOKE MSG_DISPLAY, ADDR VIEW_MEMBERS_MSG
- 00000087  68 00000160 R   *	    push   OFFSET VIEW_MEMBERS_MSG
- 0000008C  E8 00000168	   *	    call   MSG_DISPLAY
- 00000091  8B 0D 00002AAF R		MOV ECX, NUM_MEMBERS
- 00000097  83 F9 00			cmp ECX, 0
- 0000009A  0F 84 FFFFFF60		JE START
- 000000A0  BB 00000000			MOV EBX, 0
- 000000A5			OUTPUT:
- 000000A5  BE 00002AB3 R		MOV ESI, OFFSET MEMBERS
- 000000AA  B8 00000014			MOV EAX, MEMBER_SIZE
- 000000AF  F7 E3			MUL EBX
- 000000B1  03 F0			ADD ESI, Eax
- 000000B3  8B D6			MOV EDX, ESI
- 000000B5  E8 00000000 E		CALL WRITESTRING
- 000000BA  43				INC EBX
- 000000BB  E8 00000000 E		CALL CRLF
- 000000C0  E2 E3		LOOP OUTPUT
- 000000C2  E9 FFFFFF39				JMP START
-				
-				; VIEW MEMBERS FROM FILE
- 000000C7			VIEW_MFILE:
-					INVOKE CreateFile,
-					ADDR MEMBERS_FILE, ; ptr to filename
-					GENERIC_READ, ; mode = Can read
-					DO_NOT_SHARE, ; share mode
-					NULL, ; ptr to security attributes
-					OPEN_ALWAYS, ; open an existing file
-					FILE_ATTRIBUTE_NORMAL, ; normal file attribute
-					0 ; not used
- 000000C7  6A 00	   *	    push   +000000000h
- 000000C9  68 00000080	   *	    push   +000000080h
- 000000CE  6A 04	   *	    push   +000000004h
- 000000D0  6A 00	   *	    push   +000000000h
- 000000D2  6A 00	   *	    push   +000000000h
- 000000D4  68 80000000	   *	    push   +080000000h
- 000000D9  68 00000221 R   *	    push   OFFSET MEMBERS_FILE
- 000000DE  E8 00000000 E   *	    call   CreateFileA
- 000000E3  A3 00000303 R		mov filehandle, eax ; Copy handle to variable
-					invoke ReadFile,
-					filehandle, ; file handle
-					addr BUFFER_MEM, ; where to read
-					BUFFER_SIZE, ; num bytes to read
-					addr bytesRead, ; bytes actually read
-					0
- 000000E8  6A 00	   *	    push   +000000000h
- 000000EA  68 00002A17 R   *	    push   OFFSET bytesRead
- 000000EF  68 00001388	   *	    push   +000001388h
- 000000F4  68 00000307 R   *	    push   OFFSET buffer_mem
- 000000F9  FF 35 00000303 R *	    push   filehandle
- 000000FF  E8 00000000 E   *	    call   ReadFile
-					invoke CloseHandle,
-					filehandle
- 00000104  FF 35 00000303 R *	    push   filehandle
- 0000010A  E8 00000000 E   *	    call   CloseHandle
- 0000010F  BA 00000307 R		mov edx, offset BUFFER_MEM ; Write String
- 00000114  E8 00000000 E		call WriteString
- 00000119  E9 FFFFFEE2			JMP START
-				;----------------------------------
-				;--------------ADD BOOKS-----------
-				;----------------------------------	
- 0000011E				ADD_B:
-				
-					INVOKE MSG_DISPLAY, ADDR ADD_MSG
- 0000011E  68 00000181 R   *	    push   OFFSET ADD_MSG
- 00000123  E8 000000D1	   *	    call   MSG_DISPLAY
- 00000128  BE 00002B8F R		MOV ESI, OFFSET BOOKS
- 0000012D  B8 0000001E			MOV EAX, BOOK_SIZE
- 00000132  F7 25 00002B8B R		MUL NUM_BOOKS
- 00000138  03 F0			ADD ESI, EAX
- 0000013A  8B D6			MOV EDX, ESI
- 0000013C  B9 0000001E			MOV ECX, BOOK_SIZE
- 00000141  E8 00000000 E		CALL READSTRING
- 00000146  FF 05 00002B8B R		INC NUM_BOOKS
-						
- 0000014C  E9 FFFFFEAF			JMP START
-				;------------------------------------
-				;-------------VIEW BOOKS-------------
-				;------------------------------------
- 00000151				VIEW_B:
+
+; ***************************************
+; ****** LIBRARY MANAGEMENT SYSTEM ******
+; ***************************************
+
+; ***************************************
+; ************ SUBMITTED BY *************
+; ***** MUHAMMAD AHMAD 	2021-CE-43 ******
+; ***** HUSSNAIN ALI 	2021-CE-60 ******
+; ***** MIAN FARAZ   	2021-CE-44 ******
+; ***** ALI ABDULLAH    2021-CE-40 ******
+; ***************************************
+INCLUDE IRVINE32.inc
+
+.DATA
+
+;***********************************************
+; ****** Strings of messages to display ********
+;***********************************************
+
+msg1	 BYTE 0AH
+		 BYTE	"	--------------------------------------------", 0dh, 0ah
+		 BYTE	"	--  WELCOME TO LIBRARY MANAGEMENT SYSTEM  --", 0dh, 0ah
+		 BYTE	"	--------------------------------------------", 0dh, 0ah, 0ah
+		 BYTE	"	1-> Register a Member", 0dh, 0ah
+		 BYTE	"	2-> View Members", 0dh, 0ah
+		 BYTE	"	3-> View Members From File", 0dh, 0ah
+		 BYTE	"	4-> Add Book", 0dh, 0ah
+		 BYTE	"	5-> View Books", 0dh, 0ah
+		 BYTE	"	6-> View Books From Files", 0dh, 0ah
+		 BYTE	"	7-> Exit Program", 0dh, 0ah
+		 BYTE	"	Choose Your Option : ", 0
+REG_MSG	 BYTE "	Enter Member's Name to register: ",0
+VIEW_MEMBERS_MSG BYTE 0Ah,"	Viewing Registered Members: ",0AH, 0DH, 0
+ADD_MSG			 BYTE "	Enter Book Name & Author Name to Add: ", 0dh, 0ah,
+			 "	Separated By Comma and Write semi-colon and give space before entering: ",0
+VIEW_BOOKS_MSG BYTE 0Ah, "	Viewing Books in Library: ",  0dh, 0ah, 0
+EXIT_MSG	   BYTE 0AH,
+				    "	----------------- ",0dh, 0ah,
+				    "	Exiting Program...",0dh, 0ah,
+					"	------------------", 0
 					
-					INVOKE MSG_DISPLAY, ADDR VIEW_BOOKS_MSG
- 00000151  68 000001BF R   *	    push   OFFSET VIEW_BOOKS_MSG
- 00000156  E8 0000009E	   *	    call   MSG_DISPLAY
- 0000015B  8B 0D 00002B8B R		MOV ECX, NUM_BOOKS
- 00000161  83 F9 00			cmp ECX, 0
- 00000164  0F 84 FFFFFE96		JE START
- 0000016A  BB 00000000			MOV EBX, 0
- 0000016F			OUTPUTB:
- 0000016F  BE 00002B8F R		MOV ESI, OFFSET BOOKS
- 00000174  B8 0000001E			MOV EAX, BOOK_SIZE
- 00000179  F7 E3			MUL EBX
- 0000017B  03 F0			ADD ESI, Eax
- 0000017D  8B D6			MOV EDX, ESI
- 0000017F  E8 00000000 E		CALL WRITESTRING
- 00000184  43				INC EBX
- 00000185  E8 00000000 E		CALL CRLF	
- 0000018A  E2 E3		LOOP OUTPUTB
-						
- 0000018C  E9 FFFFFE6F		JMP START
-				; VIEW BOOKS FROM FILE
- 00000191			VIEW_BFILE:
-					INVOKE CreateFile,
-					ADDR BOOKS_FILE, ; ptr to filename
-					GENERIC_READ, ; mode = Can read
-					DO_NOT_SHARE, ; share mode
-					NULL, ; ptr to security attributes
-					OPEN_ALWAYS, ; open an existing file
-					FILE_ATTRIBUTE_NORMAL, ; normal file attribute
-					0 ; not used
- 00000191  6A 00	   *	    push   +000000000h
- 00000193  68 00000080	   *	    push   +000000080h
- 00000198  6A 04	   *	    push   +000000004h
- 0000019A  6A 00	   *	    push   +000000000h
- 0000019C  6A 00	   *	    push   +000000000h
- 0000019E  68 80000000	   *	    push   +080000000h
- 000001A3  68 00000293 R   *	    push   OFFSET BOOKS_FILE
- 000001A8  E8 00000000 E   *	    call   CreateFileA
- 000001AD  A3 00000303 R		mov filehandle, eax ; Copy handle to variable
-					invoke ReadFile,
-					filehandle, ; file handle
-					addr BUFFER_BOOK, ; where to read
-					BUFFER_SIZE, ; num bytes to read
-					addr bytesRead, ; bytes actually read
-					0
- 000001B2  6A 00	   *	    push   +000000000h
- 000001B4  68 00002A17 R   *	    push   OFFSET bytesRead
- 000001B9  68 00001388	   *	    push   +000001388h
- 000001BE  68 0000168F R   *	    push   OFFSET buffer_book
- 000001C3  FF 35 00000303 R *	    push   filehandle
- 000001C9  E8 00000000 E   *	    call   ReadFile
-					invoke CloseHandle,
-					filehandle
- 000001CE  FF 35 00000303 R *	    push   filehandle
- 000001D4  E8 00000000 E   *	    call   CloseHandle
- 000001D9  BA 0000168F R		mov edx, offset BUFFER_BOOK ; Write String
- 000001DE  E8 00000000 E		call WriteString
- 000001E3  E9 FFFFFE18			JMP START
-				;-------------------------------------------
-				;----------------EXIT MENU------------------
-				;-------------------------------------------
- 000001E8				EXIT_MENU:
-						INVOKE MSG_DISPLAY, ADDR EXIT_MSG
- 000001E8  68 000001DE R   *	    push   OFFSET EXIT_MSG
- 000001ED  E8 00000007	   *	    call   MSG_DISPLAY
 					
-					invoke ExitProcess,0
- 000001F2  6A 00	   *	    push   +000000000h
- 000001F4  E8 00000000 E   *	    call   ExitProcess
- 000001F9			main endp
-				
-				;-------------------------------------------
-				;--------FUNCTION TO DISPLAY A STRING-------
-				;-------------------------------------------
- 000001F9			MSG_DISPLAY PROC USES EDX, VAR: ptr dword
- 000001F9  55		   *	    push   ebp
- 000001FA  8B EC	   *	    mov    ebp, esp
- 000001FC  52		   *	    push   edx
- 000001FD  8B 55 08			MOV EDX, VAR
- 00000200  E8 00000000 E		CALL WRITESTRING
-					RET
- 00000205  5A		   *	    pop    edx
- 00000206  C9		   *	    leave  
- 00000207  C2 0004	   *	    ret    00004h
- 0000020A				MSG_DISPLAY ENDP
-				
- 0000020A			STRING_INPUT PROC USES EDX ECX, var: ptr dword
-						
- 0000020A  55		   *	    push   ebp
- 0000020B  8B EC	   *	    mov    ebp, esp
- 0000020D  52		   *	    push   edx
- 0000020E  51		   *	    push   ecx
- 0000020F  8B 55 08			MOV EDX, VAR
- 00000212  B9 00001388			MOV ECX, 5000
- 00000217  E8 00000000 E		CALL READSTRING
-					RET
- 0000021C  59		   *	    pop    ecx
- 0000021D  5A		   *	    pop    edx
- 0000021E  C9		   *	    leave  
- 0000021F  C2 0004	   *	    ret    00004h
- 00000222				STRING_INPUT ENDP
-				
-				end main
-Microsoft (R) Macro Assembler Version 14.35.32216.1	    04/16/23 23:21:29
-SourceCode.asm						     Symbols 2 - 1
+; variables to maniulate Books & Members
+
+bool		   DWORD ?
+MEMBERS_FILE   BYTE "C:\Users\faraz\Downloads\Compressed\Library-Management-System-master\Library-Management-System-master\MEMBERS.txt",0
+BOOKS_FILE     BYTE "C:\Users\faraz\Downloads\Compressed\Library-Management-System-master\Library-Management-System-master\BOOKS.txt",0
+filehandle     DWORD ?
+filehandle_B     DWORD ?
+Book_name_size   DWORD ?
+m_sizee     DWORD ?
+
+BUFFER_SIZE = 5000
+buffer_mem   BYTE buffer_size DUP (?)
+buffer_book  BYTE buffer_size DUP (?)
+bytesRead dword 1 dup(0)
+REGISTER	 DWORD 1
+VIEW_MEMBERS DWORD 2
+VIEW_MF		 DWORD 3
+ADD_BOOK	 DWORD 4
+VIEW_BOOKS	 DWORD 5
+VIEW_BF		 DWORD 6
+EXITP		 DWORD 7	
+MEMBER_SIZE = 20
+MEMBER1 DB MEMBER_SIZE DUP (?)
+MEMBER2 DB MEMBER_SIZE DUP (?)
+MEMBER3 DB MEMBER_SIZE DUP (?)
+MEMBER4 DB MEMBER_SIZE DUP (?)
+MEMBER5 DB MEMBER_SIZE DUP (?)
+MEMBER6 DB MEMBER_SIZE DUP (?)
+NUM_MEMBERS DWORD 0
+MEMBERS DD MEMBER1, MEMBER2, MEMBER3, MEMBER4, MEMBER5, MEMBER6, 0AH, 0DH, 0
+
+BOOK_SIZE = 30
+BOOK1 DB BOOK_SIZE DUP (?)
+BOOK2 DB BOOK_SIZE DUP (?)
+BOOK3 DB BOOK_SIZE DUP (?)
+BOOK4 DB BOOK_SIZE DUP (?)
+BOOK5 DB BOOK_SIZE DUP (?)
+BOOK6 DB BOOK_SIZE DUP (?)
+NUM_BOOKS DWORD 0
+BOOKS DD BOOK1, BOOK2, BOOK3, BOOK4, BOOK5, BOOK6, 0AH, 0DH, 0
 
 
+; **********************************************
+; *************** Code Section *****************
+; **********************************************
+
+.CODE
+MSG_DISPLAY proto, var: PTR DWORD
+STRING_INPUT proto, var1: PTR DWORD
+main PROC
+	START:
+	INVOKE MSG_DISPLAY,addr MSG1
+	CALL READINT	; input for options
+
+	CMP EAX, REGISTER
+	JE REG_M		; jump to Register Member section
+	CMP EAX, VIEW_MEMBERS
+	JE VIEW_M		; jump to View Members section
+	CMP EAX, VIEW_MF
+	JE VIEW_MFILE		; jump to Add Book section
+	CMP EAX, ADD_BOOK
+	JE ADD_B		; jump to View Books section
+	CMP EAX, VIEW_BOOKS
+	JE VIEW_B		; calling function to display message
+	CMP EAX, VIEW_BF
+	JE VIEW_BFILE		; taking input in 2D array
+		JMP EXIT_MENU
 
 
-Structures and Unions:
+;--------------------------------------
+;--------------VIEW MEMBERS------------
+;--------------------------------------
+	VIEW_M:
+		INVOKE MSG_DISPLAY, ADDR VIEW_MEMBERS_MSG
+	MOV ECX, NUM_MEMBERS
+	cmp ECX, 0
+	JE START
+	MOV EBX, 0
+OUTPUT:
+	MOV ESI, OFFSET MEMBERS
+	MOV EAX, MEMBER_SIZE
+	MUL EBX
+	ADD ESI, Eax
+	MOV EDX, ESI
+	CALL WRITESTRING
+	INC EBX
+	CALL CRLF
+LOOP OUTPUT
+		JMP START
 
-                N a m e                  Size
-                                         Offset      Type
+; VIEW MEMBERS FROM FILE
+VIEW_MFILE:
+	INVOKE CreateFile,
+	    ADDR MEMBERS_FILE, ; ptr to filename
+	    GENERIC_READ, ; mode = Can read
+	    DO_NOT_SHARE, ; share mode
+	    NULL, ; ptr to security attributes
+	    OPEN_ALWAYS, ; open an existing file
+	    FILE_ATTRIBUTE_NORMAL, ; normal file attribute
+	    0 ; not used
+	mov filehandle, eax ; Copy handle to variable
+	
+	invoke ReadFile,
+	    filehandle, ; file handle
+	    addr BUFFER_MEM, ; where to read
+	    BUFFER_SIZE, ; num bytes to read
+	    addr bytesRead, ; bytes actually read
+	    0
+	invoke CloseHandle,
+	filehandle
+	mov edx, offset BUFFER_MEM ; Write String
+	call WriteString
+	JMP START
 
-CONSOLE_CURSOR_INFO  . . . . . .	 00000008
-  dwSize . . . . . . . . . . . .	 00000000	 DWord
-  bVisible . . . . . . . . . . .	 00000004	 DWord
-CONSOLE_SCREEN_BUFFER_INFO . . .	 00000016
-  dwSize . . . . . . . . . . . .	 00000000	 DWord
-  dwCursorPosition . . . . . . .	 00000004	 DWord
-  wAttributes  . . . . . . . . .	 00000008	 Word
-  srWindow . . . . . . . . . . .	 0000000A	 QWord
-  dwMaximumWindowSize  . . . . .	 00000012	 DWord
-COORD  . . . . . . . . . . . . .	 00000004
-  X  . . . . . . . . . . . . . .	 00000000	 Word
-  Y  . . . . . . . . . . . . . .	 00000002	 Word
-FILETIME . . . . . . . . . . . .	 00000008
-  loDateTime . . . . . . . . . .	 00000000	 DWord
-  hiDateTime . . . . . . . . . .	 00000004	 DWord
-FOCUS_EVENT_RECORD . . . . . . .	 00000004
-  bSetFocus  . . . . . . . . . .	 00000000	 DWord
-FPU_ENVIRON  . . . . . . . . . .	 0000001C
-  controlWord  . . . . . . . . .	 00000000	 Word
-  statusWord . . . . . . . . . .	 00000004	 Word
-  tagWord  . . . . . . . . . . .	 00000008	 Word
-  instrPointerOffset . . . . . .	 0000000C	 DWord
-  instrPointerSelector . . . . .	 00000010	 DWord
-  operandPointerOffset . . . . .	 00000014	 DWord
-  operandPointerSelector . . . .	 00000018	 Word
-INPUT_RECORD . . . . . . . . . .	 00000014
-  EventType  . . . . . . . . . .	 00000000	 Word
-  Event  . . . . . . . . . . . .	 00000004	 XmmWord
-  bKeyDown . . . . . . . . . . .	 00000000	 DWord
-  wRepeatCount . . . . . . . . .	 00000004	 Word
-  wVirtualKeyCode  . . . . . . .	 00000006	 Word
-  wVirtualScanCode . . . . . . .	 00000008	 Word
-  uChar  . . . . . . . . . . . .	 0000000A	 Word
-  UnicodeChar  . . . . . . . . .	 00000000	 Word
-  AsciiChar  . . . . . . . . . .	 00000000	 Byte
-  dwControlKeyState  . . . . . .	 0000000C	 DWord
-  dwMousePosition  . . . . . . .	 00000000	 DWord
-  dwButtonState  . . . . . . . .	 00000004	 DWord
-  dwMouseControlKeyState . . . .	 00000008	 DWord
-  dwEventFlags . . . . . . . . .	 0000000C	 DWord
-  dwSize . . . . . . . . . . . .	 00000000	 DWord
-  dwCommandId  . . . . . . . . .	 00000000	 DWord
-  bSetFocus  . . . . . . . . . .	 00000000	 DWord
-KEY_EVENT_RECORD . . . . . . . .	 00000010
-  bKeyDown . . . . . . . . . . .	 00000000	 DWord
-  wRepeatCount . . . . . . . . .	 00000004	 Word
-  wVirtualKeyCode  . . . . . . .	 00000006	 Word
-  wVirtualScanCode . . . . . . .	 00000008	 Word
-  uChar  . . . . . . . . . . . .	 0000000A	 Word
-  UnicodeChar  . . . . . . . . .	 00000000	 Word
-  AsciiChar  . . . . . . . . . .	 00000000	 Byte
-  dwControlKeyState  . . . . . .	 0000000C	 DWord
-MENU_EVENT_RECORD  . . . . . . .	 00000004
-  dwCommandId  . . . . . . . . .	 00000000	 DWord
-MOUSE_EVENT_RECORD . . . . . . .	 00000010
-  dwMousePosition  . . . . . . .	 00000000	 DWord
-  dwButtonState  . . . . . . . .	 00000004	 DWord
-  dwMouseControlKeyState . . . .	 00000008	 DWord
-  dwEventFlags . . . . . . . . .	 0000000C	 DWord
-SMALL_RECT . . . . . . . . . . .	 00000008
-  Left . . . . . . . . . . . . .	 00000000	 Word
-  Top  . . . . . . . . . . . . .	 00000002	 Word
-  Right  . . . . . . . . . . . .	 00000004	 Word
-  Bottom . . . . . . . . . . . .	 00000006	 Word
-SYSTEMTIME . . . . . . . . . . .	 00000010
-  wYear  . . . . . . . . . . . .	 00000000	 Word
-  wMonth . . . . . . . . . . . .	 00000002	 Word
-  wDayOfWeek . . . . . . . . . .	 00000004	 Word
-  wDay . . . . . . . . . . . . .	 00000006	 Word
-  wHour  . . . . . . . . . . . .	 00000008	 Word
-  wMinute  . . . . . . . . . . .	 0000000A	 Word
-  wSecond  . . . . . . . . . . .	 0000000C	 Word
-  wMilliseconds  . . . . . . . .	 0000000E	 Word
-WINDOW_BUFFER_SIZE_RECORD  . . .	 00000004
-  dwSize . . . . . . . . . . . .	 00000000	 DWord
+;----------------------------------------
+;------------REGISTER MEMBERS------------
+;----------------------------------------
+	REG_M:
+		INVOKE MSG_DISPLAY, ADDR REG_MSG          ;INVOKE STRING_INPUT, ADDR INPUT_STRING
+
+	MOV ESI, OFFSET MEMBERS
+	MOV EAX, MEMBER_SIZE
+	MUL NUM_MEMBERS
+	ADD ESI, EAX
+	MOV EDX, ESI
+	MOV ECX, MEMBER_SIZE
+	CALL READSTRING
+	mov m_sizee,eax
+	INC NUM_MEMBERS
+
+	INVOKE CreateFile, ADDR MEMBERS_FILE, FILE_APPEND_DATA, 0, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
+    
+	MOV filehandle, EAX
+ 
+	INVOKE WriteFile, filehandle,ESI, m_sizee, ADDR bytesRead, NULL
+
+	JMP START
 
 
-Segments and Groups:
+;------------------------------------
+;-------------VIEW BOOKS-------------
+;------------------------------------
+	VIEW_B:
+	
+	INVOKE MSG_DISPLAY, ADDR VIEW_BOOKS_MSG
+	MOV ECX, NUM_BOOKS
+	cmp ECX, 0
+	JE START
+	MOV EBX, 0
+OUTPUTB:
+	MOV ESI, OFFSET BOOKS
+	MOV EAX, BOOK_SIZE
+	MUL EBX
+	ADD ESI, Eax
+	MOV EDX, ESI
+	CALL WRITESTRING
+	INC EBX
+	CALL CRLF	
+LOOP OUTPUTB
+		
+JMP START
+; VIEW BOOKS FROM FILE
+VIEW_BFILE:
+	INVOKE CreateFile,
+	ADDR BOOKS_FILE, ; ptr to filename
+	GENERIC_READ, ; mode = Can read
+	DO_NOT_SHARE, ; share mode
+	NULL, ; ptr to security attributes
+	OPEN_ALWAYS, ; open an existing file
+	FILE_ATTRIBUTE_NORMAL, ; normal file attribute
+	0 ; not used
+	mov filehandle_B, eax ; Copy handle to variable
+	
+	invoke ReadFile,
+	filehandle_B, ; file handle
+	addr BUFFER_BOOK, ; where to read
+	BUFFER_SIZE, ; num bytes to read
+	addr bytesRead, ; bytes actually read
+	0
+	
+	invoke CloseHandle,
+	filehandle_B
+	mov edx, offset BUFFER_BOOK ; Write String
+	call WriteString
+	JMP START
+;----------------------------------
+;--------------ADD BOOKS-----------
+;----------------------------------	
+	ADD_B:
+	INVOKE MSG_DISPLAY, ADDR ADD_MSG
+	MOV ESI, OFFSET BOOKS
+	MOV EAX, BOOK_SIZE
+	MUL NUM_BOOKS
+	ADD ESI, EAX
+	MOV EDX, ESI
+	MOV ECX, BOOK_SIZE
+	CALL READSTRING
+	mov Book_name_size,EAX 
+	INC NUM_BOOKS
+    
+	INVOKE CreateFile, ADDR BOOKS_FILE, FILE_APPEND_DATA, 0, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
+    MOV filehandle_B, EAX
+ 
+	INVOKE WriteFile, filehandle_B, ESI, Book_name_size, ADDR bytesRead, NULL
+		
+	JMP START
+;-------------------------------------------
+;----------------EXIT MENU------------------
+;-------------------------------------------
+	EXIT_MENU:
+		INVOKE MSG_DISPLAY, ADDR EXIT_MSG
+	
+	invoke ExitProcess,0
+main endp
 
-                N a m e                 Size     Length   Align   Combine Class
+;-------------------------------------------
+;--------FUNCTION TO DISPLAY A STRING-------
+;-------------------------------------------
+MSG_DISPLAY PROC USES EDX, VAR: ptr dword
+	MOV EDX, VAR
+	CALL WRITESTRING
+	RET
+	MSG_DISPLAY ENDP
 
-FLAT . . . . . . . . . . . . . .	GROUP
-STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00002BB3 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 00000222 Para	  Public  'CODE'	
+STRING_INPUT PROC USES EDX ECX, var: ptr dword
+		
+	MOV EDX, VAR
+	MOV ECX, 5000
+	CALL READSTRING
+	RET
+	STRING_INPUT ENDP
 
-
-Procedures, parameters, and locals:
-
-                N a m e                 Type     Value    Attr
-
-CloseFile  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-CloseHandle  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-Clrscr . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-CreateFileA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-CreateOutputFile . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-Crlf . . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-Delay  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-DumpMem  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-DumpRegs . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-ExitProcess  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-FileTimeToDosDateTime  . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-FileTimeToSystemTime . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-FlushConsoleInputBuffer  . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-FormatMessageA . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetCommandLineA  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetCommandTail . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetConsoleCP . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetConsoleCursorInfo . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetConsoleMode . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetConsoleScreenBufferInfo . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetDateTime  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetFileTime  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetKeyState  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetLastError . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetLocalTime . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetMaxXY . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetMseconds  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetNumberOfConsoleInputEvents  .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetProcessHeap . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetStdHandle . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetSystemTime  . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetTextColor . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GetTickCount . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-Gotoxy . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-HeapAlloc  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-HeapCreate . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-HeapDestroy  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-HeapFree . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-HeapSize . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-IsDigit  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-LocalFree  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-MSG_DISPLAY  . . . . . . . . . .	P Near	 000001F9 _TEXT	Length= 00000011 Public STDCALL
-  VAR  . . . . . . . . . . . . .	DWord	 bp + 00000008
-MessageBoxA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-MsgBoxAsk  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-MsgBox . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-OpenInputFile  . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-ParseDecimal32 . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-ParseInteger32 . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-PeekConsoleInputA  . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-Random32 . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-RandomRange  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-Randomize  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-ReadChar . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-ReadConsoleA . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-ReadConsoleInputA  . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-ReadDec  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-ReadFile . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-ReadFloat  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-ReadFromFile . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-ReadHex  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-ReadInt  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-ReadKeyFlush . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-ReadKey  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-ReadString . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-STRING_INPUT . . . . . . . . . .	P Near	 0000020A _TEXT	Length= 00000018 Public STDCALL
-  var  . . . . . . . . . . . . .	DWord	 bp + 00000008
-SetConsoleCursorInfo . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-SetConsoleCursorPosition . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-SetConsoleMode . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-SetConsoleScreenBufferSize . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-SetConsoleTextAttribute  . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-SetConsoleTitleA . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-SetConsoleWindowInfo . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-SetFilePointer . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-SetLocalTime . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-SetTextColor . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-ShowFPUStack . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-Sleep  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-StrLength  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-Str_compare  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-Str_copy . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-Str_length . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-Str_trim . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-Str_ucase  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-SystemTimeToFileTime . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-WaitMsg  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-WriteBinB  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-WriteBin . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-WriteChar  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-WriteConsoleA  . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-WriteConsoleOutputAttribute  . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-WriteConsoleOutputCharacterA . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-WriteDec . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-WriteFile  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-WriteFloat . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-WriteHexB  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-WriteHex . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-WriteInt . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-WriteStackFrameName  . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 000001F9 Public STDCALL
-  START  . . . . . . . . . . . .	L Near	 00000000 _TEXT	
-  REG_M  . . . . . . . . . . . .	L Near	 00000054 _TEXT	
-  VIEW_M . . . . . . . . . . . .	L Near	 00000087 _TEXT	
-  OUTPUT . . . . . . . . . . . .	L Near	 000000A5 _TEXT	
-  VIEW_MFILE . . . . . . . . . .	L Near	 000000C7 _TEXT	
-  ADD_B  . . . . . . . . . . . .	L Near	 0000011E _TEXT	
-  VIEW_B . . . . . . . . . . . .	L Near	 00000151 _TEXT	
-  OUTPUTB  . . . . . . . . . . .	L Near	 0000016F _TEXT	
-  VIEW_BFILE . . . . . . . . . .	L Near	 00000191 _TEXT	
-  EXIT_MENU  . . . . . . . . . .	L Near	 000001E8 _TEXT	
-printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
-scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
-wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
-
-
-Symbols:
-
-                N a m e                 Type     Value    Attr
-
-@CodeSize  . . . . . . . . . . .	Number	 00000000h   
-@DataSize  . . . . . . . . . . .	Number	 00000000h   
-@Interface . . . . . . . . . . .	Number	 00000003h   
-@Model . . . . . . . . . . . . .	Number	 00000007h   
-@code  . . . . . . . . . . . . .	Text   	 _TEXT
-@data  . . . . . . . . . . . . .	Text   	 FLAT
-@fardata?  . . . . . . . . . . .	Text   	 FLAT
-@fardata . . . . . . . . . . . .	Text   	 FLAT
-@stack . . . . . . . . . . . . .	Text   	 FLAT
-ADD_BOOK . . . . . . . . . . . .	DWord	 00002A27 _DATA	
-ADD_MSG  . . . . . . . . . . . .	Byte	 00000181 _DATA	
-ALT_MASK . . . . . . . . . . . .	Number	 00000003h   
-BOOK1  . . . . . . . . . . . . .	Byte	 00002AD7 _DATA	
-BOOK2  . . . . . . . . . . . . .	Byte	 00002AF5 _DATA	
-BOOK3  . . . . . . . . . . . . .	Byte	 00002B13 _DATA	
-BOOK4  . . . . . . . . . . . . .	Byte	 00002B31 _DATA	
-BOOK5  . . . . . . . . . . . . .	Byte	 00002B4F _DATA	
-BOOK6  . . . . . . . . . . . . .	Byte	 00002B6D _DATA	
-BOOKS_FILE . . . . . . . . . . .	Byte	 00000293 _DATA	
-BOOKS  . . . . . . . . . . . . .	DWord	 00002B8F _DATA	
-BOOK_SIZE  . . . . . . . . . . .	Number	 0000001Eh   
-BUFFER_SIZE  . . . . . . . . . .	Number	 00001388h   
-CAPSLOCK_ON  . . . . . . . . . .	Number	 00000080h   
-CREATE_ALWAYS  . . . . . . . . .	Number	 00000002h   
-CREATE_NEW . . . . . . . . . . .	Number	 00000001h   
-CTRL_MASK  . . . . . . . . . . .	Number	 0000000Ch   
-CreateFile . . . . . . . . . . .	Text   	 CreateFileA
-DO_NOT_SHARE . . . . . . . . . .	Number	 00000000h   
-ENABLE_ECHO_INPUT  . . . . . . .	Number	 00000004h   
-ENABLE_LINE_INPUT  . . . . . . .	Number	 00000002h   
-ENABLE_MOUSE_INPUT . . . . . . .	Number	 00000010h   
-ENABLE_PROCESSED_INPUT . . . . .	Number	 00000001h   
-ENABLE_PROCESSED_OUTPUT  . . . .	Number	 00000001h   
-ENABLE_WINDOW_INPUT  . . . . . .	Number	 00000008h   
-ENABLE_WRAP_AT_EOL_OUTPUT  . . .	Number	 00000002h   
-ENHANCED_KEY . . . . . . . . . .	Number	 00000100h   
-EXITP  . . . . . . . . . . . . .	DWord	 00002A33 _DATA	
-EXIT_MSG . . . . . . . . . . . .	Byte	 000001DE _DATA	
-FALSE  . . . . . . . . . . . . .	Number	 00000000h   
-FILE_APPEND_DATA . . . . . . . .	Number	 00000004h   
-FILE_ATTRIBUTE_ARCHIVE . . . . .	Number	 00000020h   
-FILE_ATTRIBUTE_COMPRESSED  . . .	Number	 00000800h   
-FILE_ATTRIBUTE_DEVICE  . . . . .	Number	 00000040h   
-FILE_ATTRIBUTE_DIRECTORY . . . .	Number	 00000010h   
-FILE_ATTRIBUTE_ENCRYPTED . . . .	Number	 00004000h   
-FILE_ATTRIBUTE_HIDDEN  . . . . .	Number	 00000002h   
-FILE_ATTRIBUTE_NORMAL  . . . . .	Number	 00000080h   
-FILE_ATTRIBUTE_NOT_CONTENT_INDEXED .	Number	 00002000h   
-FILE_ATTRIBUTE_OFFLINE . . . . .	Number	 00001000h   
-FILE_ATTRIBUTE_READONLY  . . . .	Number	 00000001h   
-FILE_ATTRIBUTE_REPARSE_POINT . .	Number	 00000400h   
-FILE_ATTRIBUTE_SPARSE_FILE . . .	Number	 00000200h   
-FILE_ATTRIBUTE_SYSTEM  . . . . .	Number	 00000004h   
-FILE_ATTRIBUTE_TEMPORARY . . . .	Number	 00000100h   
-FILE_BEGIN . . . . . . . . . . .	Number	 00000000h   
-FILE_CURRENT . . . . . . . . . .	Number	 00000001h   
-FILE_DELETE_CHILD  . . . . . . .	Number	 00000040h   
-FILE_END . . . . . . . . . . . .	Number	 00000002h   
-FILE_READ_DATA . . . . . . . . .	Number	 00000001h   
-FILE_SHARE_DELETE  . . . . . . .	Number	 00000004h   
-FILE_SHARE_READ  . . . . . . . .	Number	 00000001h   
-FILE_SHARE_WRITE . . . . . . . .	Number	 00000002h   
-FILE_WRITE_DATA  . . . . . . . .	Number	 00000002h   
-FOCUS_EVENT  . . . . . . . . . .	Number	 00000010h   
-FORMAT_MESSAGE_ALLOCATE_BUFFER .	Number	 00000100h   
-FORMAT_MESSAGE_FROM_SYSTEM . . .	Number	 00001000h   
-FormatMessage  . . . . . . . . .	Text   	 FormatMessageA
-GENERIC_ALL  . . . . . . . . . .	Number	 10000000h   
-GENERIC_EXECUTE  . . . . . . . .	Number	 20000000h   
-GENERIC_READ . . . . . . . . . .	Number	 -80000000h   
-GENERIC_WRITE  . . . . . . . . .	Number	 40000000h   
-GetCommandLine . . . . . . . . .	Text   	 GetCommandLineA
-HANDLE . . . . . . . . . . . . .	Text   	 DWORD
-HEAP_GENERATE_EXCEPTIONS . . . .	Number	 00000004h   
-HEAP_GROWABLE  . . . . . . . . .	Number	 00000002h   
-HEAP_NO_SERIALIZE  . . . . . . .	Number	 00000001h   
-HEAP_REALLOC_IN_PLACE_ONLY . . .	Number	 00000010h   
-HEAP_ZERO_MEMORY . . . . . . . .	Number	 00000008h   
-IDABORT  . . . . . . . . . . . .	Number	 00000003h   
-IDCANCEL . . . . . . . . . . . .	Number	 00000002h   
-IDCLOSE  . . . . . . . . . . . .	Number	 00000008h   
-IDCONTINUE . . . . . . . . . . .	Number	 0000000Bh   
-IDHELP . . . . . . . . . . . . .	Number	 00000009h   
-IDIGNORE . . . . . . . . . . . .	Number	 00000005h   
-IDNO . . . . . . . . . . . . . .	Number	 00000007h   
-IDOK . . . . . . . . . . . . . .	Number	 00000001h   
-IDRETRY  . . . . . . . . . . . .	Number	 00000004h   
-IDTIMEOUT  . . . . . . . . . . .	Number	 00007D00h   
-IDTRYAGAIN . . . . . . . . . . .	Number	 0000000Ah   
-IDYES  . . . . . . . . . . . . .	Number	 00000006h   
-INVALID_HANDLE_VALUE . . . . . .	Number	 -00000001h   
-KBDOWN_FLAG  . . . . . . . . . .	Number	 00000001h   
-KEY_EVENT  . . . . . . . . . . .	Number	 00000001h   
-KEY_MASKS  . . . . . . . . . . .	Number	 0000001Fh   
-LEFT_ALT_PRESSED . . . . . . . .	Number	 00000002h   
-LEFT_CTRL_PRESSED  . . . . . . .	Number	 00000008h   
-MB_ABORTRETRYIGNORE  . . . . . .	Number	 00000002h   
-MB_APPLMODAL . . . . . . . . . .	Number	 00000000h   
-MB_CANCELTRYCONTINUE . . . . . .	Number	 00000006h   
-MB_DEFBUTTON1  . . . . . . . . .	Number	 00000000h   
-MB_DEFBUTTON2  . . . . . . . . .	Number	 00000100h   
-MB_DEFBUTTON3  . . . . . . . . .	Number	 00000200h   
-MB_DEFBUTTON4  . . . . . . . . .	Number	 00000300h   
-MB_HELP  . . . . . . . . . . . .	Number	 00004000h   
-MB_ICONASTERISK  . . . . . . . .	Number	 00000040h   
-MB_ICONERROR . . . . . . . . . .	Number	 00000010h   
-MB_ICONEXCLAMATION . . . . . . .	Number	 00000030h   
-MB_ICONHAND  . . . . . . . . . .	Number	 00000010h   
-MB_ICONINFORMATION . . . . . . .	Number	 00000040h   
-MB_ICONQUESTION  . . . . . . . .	Number	 00000020h   
-MB_ICONSTOP  . . . . . . . . . .	Number	 00000010h   
-MB_ICONWARNING . . . . . . . . .	Number	 00000030h   
-MB_OKCANCEL  . . . . . . . . . .	Number	 00000001h   
-MB_OK  . . . . . . . . . . . . .	Number	 00000000h   
-MB_RETRYCANCEL . . . . . . . . .	Number	 00000005h   
-MB_SYSTEMMODAL . . . . . . . . .	Number	 00001000h   
-MB_TASKMODAL . . . . . . . . . .	Number	 00002000h   
-MB_USERICON  . . . . . . . . . .	Number	 00000080h   
-MB_YESNOCANCEL . . . . . . . . .	Number	 00000003h   
-MB_YESNO . . . . . . . . . . . .	Number	 00000004h   
-MEMBER1  . . . . . . . . . . . .	Byte	 00002A37 _DATA	
-MEMBER2  . . . . . . . . . . . .	Byte	 00002A4B _DATA	
-MEMBER3  . . . . . . . . . . . .	Byte	 00002A5F _DATA	
-MEMBER4  . . . . . . . . . . . .	Byte	 00002A73 _DATA	
-MEMBER5  . . . . . . . . . . . .	Byte	 00002A87 _DATA	
-MEMBER6  . . . . . . . . . . . .	Byte	 00002A9B _DATA	
-MEMBERS_FILE . . . . . . . . . .	Byte	 00000221 _DATA	
-MEMBERS  . . . . . . . . . . . .	DWord	 00002AB3 _DATA	
-MEMBER_SIZE  . . . . . . . . . .	Number	 00000014h   
-MENU_EVENT . . . . . . . . . . .	Number	 00000008h   
-MOUSE_EVENT  . . . . . . . . . .	Number	 00000002h   
-MessageBox . . . . . . . . . . .	Text   	 MessageBoxA
-NULL . . . . . . . . . . . . . .	Number	 00000000h   
-NUMLOCK_ON . . . . . . . . . . .	Number	 00000020h   
-NUM_BOOKS  . . . . . . . . . . .	DWord	 00002B8B _DATA	
-NUM_MEMBERS  . . . . . . . . . .	DWord	 00002AAF _DATA	
-OPEN_ALWAYS  . . . . . . . . . .	Number	 00000004h   
-OPEN_EXISTING  . . . . . . . . .	Number	 00000003h   
-PeekConsoleInput . . . . . . . .	Text   	 PeekConsoleInputA
-REGISTER . . . . . . . . . . . .	DWord	 00002A1B _DATA	
-REG_MSG  . . . . . . . . . . . .	Byte	 0000013D _DATA	
-RIGHT_ALT_PRESSED  . . . . . . .	Number	 00000001h   
-RIGHT_CTRL_PRESSED . . . . . . .	Number	 00000004h   
-ReadConsoleInput . . . . . . . .	Text   	 ReadConsoleInputA
-ReadConsole  . . . . . . . . . .	Text   	 ReadConsoleA
-SCROLLLOCK_ON  . . . . . . . . .	Number	 00000040h   
-SHIFT_MASK . . . . . . . . . . .	Number	 00000010h   
-SHIFT_PRESSED  . . . . . . . . .	Number	 00000010h   
-STD_ERROR_HANDLE . . . . . . . .	Number	 -0000000Ch   
-STD_INPUT_HANDLE . . . . . . . .	Number	 -0000000Ah   
-STD_OUTPUT_HANDLE  . . . . . . .	Number	 -0000000Bh   
-SetConsoleTitle  . . . . . . . .	Text   	 SetConsoleTitleA
-TAB  . . . . . . . . . . . . . .	Number	 00000009h   
-TRUE . . . . . . . . . . . . . .	Number	 00000001h   
-TRUNCATE_EXISTING  . . . . . . .	Number	 00000005h   
-VIEW_BF  . . . . . . . . . . . .	DWord	 00002A2F _DATA	
-VIEW_BOOKS_MSG . . . . . . . . .	Byte	 000001BF _DATA	
-VIEW_BOOKS . . . . . . . . . . .	DWord	 00002A2B _DATA	
-VIEW_MEMBERS_MSG . . . . . . . .	Byte	 00000160 _DATA	
-VIEW_MEMBERS . . . . . . . . . .	DWord	 00002A1F _DATA	
-VIEW_MF  . . . . . . . . . . . .	DWord	 00002A23 _DATA	
-VK_11  . . . . . . . . . . . . .	Number	 000000BDh   
-VK_12  . . . . . . . . . . . . .	Number	 000000BBh   
-VK_ADD . . . . . . . . . . . . .	Number	 0000006Bh   
-VK_BACK  . . . . . . . . . . . .	Number	 00000008h   
-VK_CANCEL  . . . . . . . . . . .	Number	 00000003h   
-VK_CAPITAL . . . . . . . . . . .	Number	 00000014h   
-VK_CLEAR . . . . . . . . . . . .	Number	 0000000Ch   
-VK_CONTROL . . . . . . . . . . .	Number	 00000011h   
-VK_DECIMAL . . . . . . . . . . .	Number	 0000006Eh   
-VK_DELETE  . . . . . . . . . . .	Number	 0000002Eh   
-VK_DIVIDE  . . . . . . . . . . .	Number	 0000006Fh   
-VK_DOWN  . . . . . . . . . . . .	Number	 00000028h   
-VK_END . . . . . . . . . . . . .	Number	 00000023h   
-VK_ESCAPE  . . . . . . . . . . .	Number	 0000001Bh   
-VK_EXECUTE . . . . . . . . . . .	Number	 0000002Bh   
-VK_F10 . . . . . . . . . . . . .	Number	 00000079h   
-VK_F11 . . . . . . . . . . . . .	Number	 0000007Ah   
-VK_F12 . . . . . . . . . . . . .	Number	 0000007Bh   
-VK_F13 . . . . . . . . . . . . .	Number	 0000007Ch   
-VK_F14 . . . . . . . . . . . . .	Number	 0000007Dh   
-VK_F15 . . . . . . . . . . . . .	Number	 0000007Eh   
-VK_F16 . . . . . . . . . . . . .	Number	 0000007Fh   
-VK_F17 . . . . . . . . . . . . .	Number	 00000080h   
-VK_F18 . . . . . . . . . . . . .	Number	 00000081h   
-VK_F19 . . . . . . . . . . . . .	Number	 00000082h   
-VK_F1  . . . . . . . . . . . . .	Number	 00000070h   
-VK_F20 . . . . . . . . . . . . .	Number	 00000083h   
-VK_F21 . . . . . . . . . . . . .	Number	 00000084h   
-VK_F22 . . . . . . . . . . . . .	Number	 00000085h   
-VK_F23 . . . . . . . . . . . . .	Number	 00000086h   
-VK_F24 . . . . . . . . . . . . .	Number	 00000087h   
-VK_F2  . . . . . . . . . . . . .	Number	 00000071h   
-VK_F3  . . . . . . . . . . . . .	Number	 00000072h   
-VK_F4  . . . . . . . . . . . . .	Number	 00000073h   
-VK_F5  . . . . . . . . . . . . .	Number	 00000074h   
-VK_F6  . . . . . . . . . . . . .	Number	 00000075h   
-VK_F7  . . . . . . . . . . . . .	Number	 00000076h   
-VK_F8  . . . . . . . . . . . . .	Number	 00000077h   
-VK_F9  . . . . . . . . . . . . .	Number	 00000078h   
-VK_HELP  . . . . . . . . . . . .	Number	 0000002Fh   
-VK_HOME  . . . . . . . . . . . .	Number	 00000024h   
-VK_INSERT  . . . . . . . . . . .	Number	 0000002Dh   
-VK_LBUTTON . . . . . . . . . . .	Number	 00000001h   
-VK_LCONTROL  . . . . . . . . . .	Number	 000000A2h   
-VK_LEFT  . . . . . . . . . . . .	Number	 00000025h   
-VK_LMENU . . . . . . . . . . . .	Number	 000000A4h   
-VK_LSHIFT  . . . . . . . . . . .	Number	 000000A0h   
-VK_MENU  . . . . . . . . . . . .	Number	 00000012h   
-VK_MULTIPLY  . . . . . . . . . .	Number	 0000006Ah   
-VK_NEXT  . . . . . . . . . . . .	Number	 00000022h   
-VK_NUMLOCK . . . . . . . . . . .	Number	 00000090h   
-VK_NUMPAD0 . . . . . . . . . . .	Number	 00000060h   
-VK_NUMPAD1 . . . . . . . . . . .	Number	 00000061h   
-VK_NUMPAD2 . . . . . . . . . . .	Number	 00000062h   
-VK_NUMPAD3 . . . . . . . . . . .	Number	 00000063h   
-VK_NUMPAD4 . . . . . . . . . . .	Number	 00000064h   
-VK_NUMPAD5 . . . . . . . . . . .	Number	 00000065h   
-VK_NUMPAD6 . . . . . . . . . . .	Number	 00000066h   
-VK_NUMPAD7 . . . . . . . . . . .	Number	 00000067h   
-VK_NUMPAD8 . . . . . . . . . . .	Number	 00000068h   
-VK_NUMPAD9 . . . . . . . . . . .	Number	 00000069h   
-VK_PAUSE . . . . . . . . . . . .	Number	 00000013h   
-VK_PRINT . . . . . . . . . . . .	Number	 0000002Ah   
-VK_PRIOR . . . . . . . . . . . .	Number	 00000021h   
-VK_RBUTTON . . . . . . . . . . .	Number	 00000002h   
-VK_RCONTROL  . . . . . . . . . .	Number	 000000A3h   
-VK_RETURN  . . . . . . . . . . .	Number	 0000000Dh   
-VK_RIGHT . . . . . . . . . . . .	Number	 00000027h   
-VK_RMENU . . . . . . . . . . . .	Number	 000000A5h   
-VK_RSHIFT  . . . . . . . . . . .	Number	 000000A1h   
-VK_SCROLL  . . . . . . . . . . .	Number	 00000091h   
-VK_SEPARATER . . . . . . . . . .	Number	 0000006Ch   
-VK_SHIFT . . . . . . . . . . . .	Number	 00000010h   
-VK_SNAPSHOT  . . . . . . . . . .	Number	 0000002Ch   
-VK_SPACE . . . . . . . . . . . .	Number	 00000020h   
-VK_SUBTRACT  . . . . . . . . . .	Number	 0000006Dh   
-VK_TAB . . . . . . . . . . . . .	Number	 00000009h   
-VK_UP  . . . . . . . . . . . . .	Number	 00000026h   
-WINDOW_BUFFER_SIZE_EVENT . . . .	Number	 00000004h   
-WriteConsoleOutputCharacter  . .	Text   	 WriteConsoleOutputCharacterA
-WriteConsole . . . . . . . . . .	Text   	 WriteConsoleA
-black  . . . . . . . . . . . . .	Number	 00000000h   
-blue . . . . . . . . . . . . . .	Number	 00000001h   
-bool . . . . . . . . . . . . . .	DWord	 0000021D _DATA	
-brown  . . . . . . . . . . . . .	Number	 00000006h   
-buffer_book  . . . . . . . . . .	Byte	 0000168F _DATA	
-buffer_mem . . . . . . . . . . .	Byte	 00000307 _DATA	
-bytesRead  . . . . . . . . . . .	DWord	 00002A17 _DATA	
-cyan . . . . . . . . . . . . . .	Number	 00000003h   
-exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
-filehandle . . . . . . . . . . .	DWord	 00000303 _DATA	
-gray . . . . . . . . . . . . . .	Number	 00000008h   
-green  . . . . . . . . . . . . .	Number	 00000002h   
-lightBlue  . . . . . . . . . . .	Number	 00000009h   
-lightCyan  . . . . . . . . . . .	Number	 0000000Bh   
-lightGray  . . . . . . . . . . .	Number	 00000007h   
-lightGreen . . . . . . . . . . .	Number	 0000000Ah   
-lightMagenta . . . . . . . . . .	Number	 0000000Dh   
-lightRed . . . . . . . . . . . .	Number	 0000000Ch   
-magenta  . . . . . . . . . . . .	Number	 00000005h   
-msg1 . . . . . . . . . . . . . .	Byte	 00000000 _DATA	
-red  . . . . . . . . . . . . . .	Number	 00000004h   
-white  . . . . . . . . . . . . .	Number	 0000000Fh   
-wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
-yellow . . . . . . . . . . . . .	Number	 0000000Eh   
-
-	   0 Warnings
-	   0 Errors
+end main
