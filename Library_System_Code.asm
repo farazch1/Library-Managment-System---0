@@ -33,7 +33,9 @@ msg1	 BYTE 0AH
 REG_MSG	 BYTE "	Enter Member's Name to register: ",0
 VIEW_MEMBERS_MSG BYTE 0Ah,"	Viewing Registered Members: ",0AH, 0DH, 0
 ADD_MSG			 BYTE "	Enter Book Name & Author Name to Add: ", 0dh, 0ah,
-			 "	Separated By Comma and Write semi-colon and give space before entering: ",0
+			 "	Separated By Comma ",0dh,0ah,
+			 "	Note: ",0dh,0ah,
+			 "	Please write two fullstops spaced apart after writing info and before pressing enter: ",0
 VIEW_BOOKS_MSG BYTE 0Ah, "	Viewing Books in Library: ",  0dh, 0ah, 0
 EXIT_MSG	   BYTE 0AH,
 				    "	----------------- ",0dh, 0ah,
@@ -44,12 +46,17 @@ EXIT_MSG	   BYTE 0AH,
 ; variables to maniulate Books & Members
 
 bool		   DWORD ?
-MEMBERS_FILE   BYTE "C:\Users\faraz\Downloads\Compressed\Library-Management-System-master\Library-Management-System-master\MEMBERS.txt",0
-BOOKS_FILE     BYTE "C:\Users\faraz\Downloads\Compressed\Library-Management-System-master\Library-Management-System-master\BOOKS.txt",0
+MEMBERS_FILE   BYTE "C:\Users\faraz\Desktop\Library-Management-System-master\Library-Management-System-master\MEMBERS.txt",0
+BOOKS_FILE     BYTE "C:\Users\faraz\Desktop\Library-Management-System-master\Library-Management-System-master\BOOKS.txt",0
 filehandle     DWORD ?
 filehandle_B     DWORD ?
 Book_name_size   DWORD ?
 m_sizee     DWORD ?
+
+SPACEMAKER DWORD 0ah
+MEMS DWORD 1
+
+B_MEMS DWORD 1
 
 BUFFER_SIZE = 5000
 buffer_mem   BYTE buffer_size DUP (?)
@@ -92,6 +99,7 @@ MSG_DISPLAY proto, var: PTR DWORD
 STRING_INPUT proto, var1: PTR DWORD
 main PROC
 	START:
+
 	INVOKE MSG_DISPLAY,addr MSG1
 	CALL READINT	; input for options
 
@@ -168,13 +176,26 @@ VIEW_MFILE:
 	MOV EDX, ESI
 	MOV ECX, MEMBER_SIZE
 	CALL READSTRING
-	mov m_sizee,eax
+	MOV m_sizee,EAX
 	INC NUM_MEMBERS
+	cmp MEMS,1
+	JA aldr
 
 	INVOKE CreateFile, ADDR MEMBERS_FILE, FILE_APPEND_DATA, 0, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
-    MOV filehandle, EAX
- 
-	INVOKE WriteFile, filehandle,ESI, m_sizee, ADDR bytesRead, NULL
+	MOV filehandle, EAX
+    aldr:
+	   mov EDI, OFFSET SPACEMAKER
+	   mov  eax,fileHandle
+       mov  edx,EDI
+       mov  ecx,1
+       call WriteToFile
+       mov  eax,fileHandle
+       mov  edx,ESI
+       mov  ecx,m_sizee
+       call WriteToFile
+
+	   inc MEMS
+	
 
 	JMP START
 
@@ -193,7 +214,7 @@ OUTPUTB:
 	MOV ESI, OFFSET BOOKS
 	MOV EAX, BOOK_SIZE
 	MUL EBX
-	ADD ESI, Eax
+	ADD ESI, EAX
 	MOV EDX, ESI
 	CALL WRITESTRING
 	INC EBX
@@ -239,11 +260,24 @@ VIEW_BFILE:
 	CALL READSTRING
 	mov Book_name_size,EAX 
 	INC NUM_BOOKS
-    
+	cmp B_MEMS,1
+	JA aldrq
+
 	INVOKE CreateFile, ADDR BOOKS_FILE, FILE_APPEND_DATA, 0, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
-    MOV filehandle_B, EAX
- 
-	INVOKE WriteFile, filehandle_B, ESI, Book_name_size, ADDR bytesRead, NULL
+	MOV filehandle_B, EAX
+    aldrq:
+	   mov EDI, OFFSET SPACEMAKER
+	   mov  eax,filehandle_B
+       mov  edx,EDI
+       mov  ecx,1
+       call WriteToFile
+       mov  eax,filehandle_B
+       mov  edx,ESI
+       mov  ecx,Book_name_size
+       call WriteToFile
+
+	   inc B_MEMS
+
 		
 	JMP START
 ;-------------------------------------------
